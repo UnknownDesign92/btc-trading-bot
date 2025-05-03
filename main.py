@@ -1,4 +1,3 @@
-
 import time
 from discord_notifier import send_discord_message
 from event_checker import check_events
@@ -18,6 +17,5 @@ while True:
 
     if event_info:
         send_discord_message(WEBHOOK_URL, f"📅 Bevorstehendes Event: {event_info}")
-{event_info}")
 
     time.sleep(300)  # alle 5 Minuten
