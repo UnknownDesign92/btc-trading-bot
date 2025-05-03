@@ -12,7 +12,19 @@ def calculate_rsi(data, window=14):
     loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
     rs = gain / loss
     return 100 - (100 / (1 + rs))
+def analyze_btc():
+    # Hier wird die Bitcoin-Analyse durchgeführt (dies ist nur ein Platzhalter)
+    from random import choice
+    return choice(["long", "short", "neutral"])
 
+def get_technical_indicators():
+    # Beispiel für technische Indikatoren
+    return {"RSI": 50, "Moving_Avg": 100}
+
+def calculate_position_size(balance=1000, risk_percentage=0.01, stop_loss=0.02):
+    # Berechnung der Positionsgröße
+    position_size = (balance * risk_percentage) / stop_loss
+    return position_size
 # Simulierte BTC-Daten (kannst du durch echte Daten ersetzen)
 data = pd.DataFrame({
     'close': np.random.randn(100) + 100  # zufällige Zahlen für den Schlusskurs
