@@ -7,20 +7,16 @@ WEBHOOK_URL = "https://discord.com/api/webhooks/1368347672825561218/UlxIyFUDOJm4
 
 last_signal = None
 
-try:
-    while True:
-        signal = analyze_btc()
-        event_info = check_events()
+while True:
+    signal = analyze_btc()
+    event_info = check_events()
 
-        if signal != last_signal:
-            print(f"Neues Signal: {signal}")  # Debugging-Ausgabe
-            send_discord_message(WEBHOOK_URL, f"📈 Neues Signal: **{signal.upper()}**")
-            last_signal = signal
+    if signal != last_signal:
+        send_discord_message(WEBHOOK_URL, f"📈 Neues Signal: **{signal.upper()}**")
+        last_signal = signal
 
-        if event_info:
-            print(f"Bevorstehendes Event: {event_info}")  # Debugging-Ausgabe
-            send_discord_message(WEBHOOK_URL, f"📅 Bevorstehendes Event: {event_info}")
+    if event_info:
+        # Hier den String korrekt abschließen
+        send_discord_message(WEBHOOK_URL, f"📅 Bevorstehendes Event: {event_info}")
 
-        time.sleep(300)  # alle 5 Minuten
-except Exception as e:
-    print(f"Fehler: {e}")
+    time.sleep(300)  # alle 5 Minuten
