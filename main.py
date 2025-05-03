@@ -17,7 +17,7 @@ while True:
         last_signal = signal
 
     if event_info:
-        send_discord_message(WEBHOOK_URL, f"📅 Bevorstehendes Event:
+        send_discord_message(WEBHOOK_URL, f"📅 Bevorstehendes Event: {event_info}")
 {event_info}")
 
     time.sleep(300)  # alle 5 Minuten
