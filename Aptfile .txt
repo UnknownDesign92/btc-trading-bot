@@ -1,1 +1,6 @@
-libta-lib0-dev
+libatlas-base-dev
+libssl-dev
+gcc
+g++
+python3-dev
+ta-lib
