@@ -1,0 +1,4 @@
+build:
+  # Hier fügen wir das Buildpack hinzu, das TA-Lib installiert
+  buildpacks:
+    - https://github.com/heroku/heroku-buildpack-apt
