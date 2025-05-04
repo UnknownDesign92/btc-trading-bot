@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from random import choice
+import time
 
 # Beispiel für einfache Moving Average Berechnung
 def calculate_moving_average(data, window=14):
@@ -56,4 +57,26 @@ print(rsi.tail())  # zeigt die letzten 5 Werte des RSI
 # Beispiel für die Verwendung der get_technical_indicators-Funktion
 tech_indicators = get_technical_indicators(data)
 print(tech_indicators)  # Zeigt die technischen Indikatoren an
+
+# Simuliere eine kontinuierliche Marktüberwachung (z.B. alle 5 Minuten):
+while True:
+    data = get_simulated_data()  # Hole die neuesten simulierten Marktdaten
+    tech_indicators = get_technical_indicators(data)
+    signal = analyze_btc()  # Führe die BTC-Analyse durch und bekomme ein Signal
+
+    # Ausgabe der Ergebnisse
+    print(f"Signal: {signal}")
+    print(f"Technische Indikatoren: {tech_indicators}")
+
+    # Überprüfe, ob das Signal sich geändert hat oder ob es eine neue Nachricht geben soll
+    if signal == "long":
+        print("Signal ist Long – Bereit zu handeln.")
+    elif signal == "short":
+        print("Signal ist Short – Bereit zu handeln.")
+    elif signal == "neutral":
+        print("Signal ist Neutral – Keine Aktion notwendig.")
+
+    # Warte 5 Minuten, bevor die Daten erneut abgefragt werden
+    time.sleep(300)  # alle 5 Minuten
+
 
