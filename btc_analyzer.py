@@ -4,6 +4,9 @@ from random import choice
 import requests
 import time
 
+# API-Token für Finnhub (Registrierung erforderlich)
+FINNHUB_API_KEY = "your_finnhub_api_key"  # Ersetze durch deinen eigenen API-Schlüssel
+
 # Beispiel für einfache Moving Average Berechnung
 def calculate_moving_average(data, window=14):
     """Berechnet den gleitenden Durchschnitt (Moving Average) der BTC-Daten."""
@@ -51,6 +54,14 @@ def get_real_btc_data():
     closes = [float(candle[4]) for candle in data]  # Der Schlusspreis ist an der 5. Stelle
     return pd.DataFrame({'close': closes})
 
+# Holt wichtige Finanzereignisse (z.B. FOMC, Zinssatzentscheidungen)
+def get_economic_events():
+    """Holt wichtige Wirtschaftsnachrichten und Ereignisse von Finnhub."""
+    url = f"https://finnhub.io/api/v1/calendar/economic?from=2025-05-01&to=2025-05-31&token={FINNHUB_API_KEY}"
+    response = requests.get(url)
+    events = response.json().get('economicCalendar', [])
+    return events
+
 # Berechnungen (Beispiel mit echten Daten von Binance)
 data = get_real_btc_data()  # Hole die echten Daten von Binance
 
@@ -72,9 +83,14 @@ while True:
     tech_indicators = get_technical_indicators(data)
     signal = analyze_btc()  # Führe die BTC-Analyse durch und bekomme ein Signal
 
+    # Holt aktuelle wirtschaftliche Ereignisse
+    economic_events = get_economic_events()
+    important_events = [event for event in economic_events if event['impact'] in ['High', 'Medium']]
+
     # Ausgabe der Ergebnisse
     print(f"Signal: {signal}")
     print(f"Technische Indikatoren: {tech_indicators}")
+    print(f"Wichtige Ereignisse: {important_events}")
 
     # Überprüfe, ob das Signal sich geändert hat oder ob es eine neue Nachricht geben soll
     if signal == "long":
