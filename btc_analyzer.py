@@ -4,8 +4,34 @@ from random import choice
 import requests
 import time
 
-# API-Token für Finnhub (Registrierung erforderlich)
-FINNHUB_API_KEY = "your_finnhub_api_key"  # Ersetze durch deinen eigenen API-Schlüssel
+# Abruf von wichtigen Bitcoin-Ereignissen von CoinMarketCal
+def get_coinmarketcal_events():
+    """Holt bevorstehende Ereignisse für Bitcoin (Hard Forks, Upgrades, etc.) von CoinMarketCal."""
+    url = "https://api.coinmarketcal.com/v1/events"
+    params = {'coin': 'bitcoin'}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        events = response.json()  # Liste der Ereignisse
+        return events['data']  # Rückgabe der Ereignisse
+    else:
+        print("Fehler beim Abrufen der CoinMarketCal-Ereignisse:", response.status_code)
+        return []
+
+# Abruf der neuesten Bitcoin-Nachrichten von CryptoPanic
+def get_cryptopanic_news():
+    """Holt die neuesten Bitcoin-Nachrichten von CryptoPanic."""
+    url = "https://cryptopanic.com/api/v1/posts/"
+    params = {
+        'filter': 'bitcoin',  # Filter für Bitcoin-Nachrichten
+        'auth_token': 'dein_api_token'  # Dein Authentifizierungstoken für CryptoPanic
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        news = response.json()
+        return news['results']  # Rückgabe der Nachrichten
+    else:
+        print("Fehler beim Abrufen der CryptoPanic-Nachrichten:", response.status_code)
+        return []
 
 # Beispiel für einfache Moving Average Berechnung
 def calculate_moving_average(data, window=14):
@@ -22,9 +48,15 @@ def calculate_rsi(data, window=14):
     return 100 - (100 / (1 + rs))
 
 # Die Funktion, die die BTC-Analyse durchführt (hier als Platzhalter)
-def analyze_btc():
-    """Führt eine zufällige Analyse des Bitcoin-Markts durch und gibt ein Signal zurück."""
-    return choice(["long", "short", "neutral"])
+def analyze_btc(events, news):
+    """Führt eine Analyse des Bitcoin-Markts durch und gibt ein Signal zurück unter Berücksichtigung von Ereignissen und Nachrichten."""
+    if any(event['name'] == 'Bitcoin Hard Fork' for event in events):  # Beispiel für Hard Forks
+        return "neutral"  # Neutral, weil Hard Forks den Markt destabilisieren können.
+    
+    if any("bearish" in article['title'].lower() for article in news):
+        return "short"  # Short-Signal aufgrund negativer Nachrichten
+
+    return choice(["long", "short", "neutral"])  # Zufälliges Signal als Platzhalter
 
 # Holt technische Indikatoren (RSI und Moving Average)
 def get_technical_indicators(data):
@@ -54,14 +86,6 @@ def get_real_btc_data():
     closes = [float(candle[4]) for candle in data]  # Der Schlusspreis ist an der 5. Stelle
     return pd.DataFrame({'close': closes})
 
-# Holt wichtige Finanzereignisse (z.B. FOMC, Zinssatzentscheidungen)
-def get_economic_events():
-    """Holt wichtige Wirtschaftsnachrichten und Ereignisse von Finnhub."""
-    url = f"https://finnhub.io/api/v1/calendar/economic?from=2025-05-01&to=2025-05-31&token={FINNHUB_API_KEY}"
-    response = requests.get(url)
-    events = response.json().get('economicCalendar', [])
-    return events
-
 # Berechnungen (Beispiel mit echten Daten von Binance)
 data = get_real_btc_data()  # Hole die echten Daten von Binance
 
@@ -81,16 +105,17 @@ print(tech_indicators)  # Zeigt die technischen Indikatoren an
 while True:
     data = get_real_btc_data()  # Hole die neuesten echten Marktdaten von Binance
     tech_indicators = get_technical_indicators(data)
-    signal = analyze_btc()  # Führe die BTC-Analyse durch und bekomme ein Signal
+    
+    # Hole Nachrichten und Ereignisse
+    events = get_coinmarketcal_events()  # Hole die bevorstehenden Ereignisse
+    news = get_cryptopanic_news()  # Hole die neuesten Nachrichten
 
-    # Holt aktuelle wirtschaftliche Ereignisse
-    economic_events = get_economic_events()
-    important_events = [event for event in economic_events if event['impact'] in ['High', 'Medium']]
+    # Führe die BTC-Analyse unter Berücksichtigung der Ereignisse und Nachrichten durch
+    signal = analyze_btc(events, news)  # Führe die BTC-Analyse durch und bekomme ein Signal
 
     # Ausgabe der Ergebnisse
     print(f"Signal: {signal}")
     print(f"Technische Indikatoren: {tech_indicators}")
-    print(f"Wichtige Ereignisse: {important_events}")
 
     # Überprüfe, ob das Signal sich geändert hat oder ob es eine neue Nachricht geben soll
     if signal == "long":
