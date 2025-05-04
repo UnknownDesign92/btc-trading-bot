@@ -3,7 +3,7 @@ from discord_notifier import send_discord_message
 from event_checker import get_events, get_news
 from btc_analyzer import get_btc_data, calculate_indicators, generate_signal
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/..."  # Deine Discord Webhook-URL
+WEBHOOK_URL = "https://discord.com/api/webhooks/1368347672825561218/UlxIyFUDOJm46Vd0fVARlw4hSe6lFTbNXVt-h171BiOY80i_jl79qJLt-_0234Y49sbv"  # Deine Discord Webhook-URL
 last_signal = None
 last_message_time = time.time()  # Zeit der letzten Nachricht
 message_interval = 20 * 60  # 20 Minuten (in Sekunden)
@@ -13,12 +13,12 @@ while True:
     df = get_btc_data()
     df = calculate_indicators(df)
     
-    # Generiere ein Handelssignal
-    signal = generate_signal(df)
-
     # Hole bevorstehende Ereignisse und Nachrichten
-    events = get_events()
-    news = get_news()
+    events = get_events()  # Hole wichtige Ereignisse (z.B. Hard Forks, Upgrades)
+    news = get_news()  # Hole die neuesten Nachrichten
+
+    # Generiere ein Handelssignal unter Berücksichtigung von Ereignissen und Nachrichten
+    signal = generate_signal(df, events, news)
 
     # Baue die Nachricht
     message = f"📈 **Neues Signal: {signal.upper()}**\n"
@@ -39,7 +39,7 @@ while True:
         news_info = "\n".join([article['title'] for article in news])  # Zeigt Titel der neuesten Nachrichten
         message += f"📰 **Neueste Nachrichten**:\n{news_info}\n"
 
-    # Sende die Nachricht an Discord
+    # Sende die Nachricht an Discord nur, wenn das Signal sich geändert hat oder das Intervall erreicht ist
     current_time = time.time()
     time_since_last_message = current_time - last_message_time
     if time_since_last_message >= message_interval or signal != last_signal:
