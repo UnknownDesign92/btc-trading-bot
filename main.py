@@ -17,6 +17,9 @@ while True:
     event_info = check_events()
     tech_indicators = get_technical_indicators(data)  # Hole die technischen Indikatoren mit den echten Daten
 
+    # Hole den aktuellen BTC-Preis (letzter Schlusskurs)
+    current_btc_price = data['close'].iloc[-1]
+
     # Überprüfen, ob wir alle 5 Minuten den Markt analysieren und eine Nachricht senden sollen
     current_time = time.time()
     time_since_last_message = current_time - last_message_time
@@ -30,6 +33,7 @@ while True:
         message += f"   - **RSI**: {tech_indicators['rsi']}\n"
         message += f"   - **Moving Avg**: {tech_indicators['moving_avg']}\n"
         message += f"- ⏳ **Voraussichtliche Handelsdauer**: Halte den Trade für ca. **3 Stunden**\n"
+        message += f"- 💰 **Aktueller BTC-Preis**: **${current_btc_price:.2f}**\n"  # Füge den aktuellen BTC-Preis hinzu
 
         # Wenn das Signal "neutral" ist, bedeutet es, dass du den Trade schließen solltest
         if signal == "neutral" and last_signal != "neutral":
