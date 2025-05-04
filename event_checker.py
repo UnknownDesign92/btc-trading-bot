@@ -1,67 +1,81 @@
 import requests
 
+# API-Schlüssel
+COINMARKETCAL_API_KEY = "sU17gXgo5G5G5Ooe8IaySaZ39311FxKF4baByVRP"
+CRYPTOPANIC_API_KEY = "4d84414184e3a7a22be654a0b20ec023be078aa3"
+
 # Abruf von wichtigen Bitcoin-Ereignissen von CoinMarketCal
 def get_coinmarketcal_events():
-    """Holt bevorstehende Ereignisse für Bitcoin (Hard Forks, Upgrades, etc.) von CoinMarketCal."""
-    url = "https://api.coinmarketcal.com/v1/events"
-    params = {'coin': 'bitcoin'}
-    response = requests.get(url, params=params)
+    """Holt bevorstehende Ereignisse für Bitcoin von CoinMarketCal."""
+    url = "https://developers.coinmarketcal.com/v1/events"
+    headers = {
+        'Accept': 'application/json',
+        'x-api-key': COINMARKETCAL_API_KEY
+    }
+    params = {
+        'coins': 'bitcoin',
+        'max': 5,
+        'page': 1
+    }
+    response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
-        events = response.json()  # Liste der Ereignisse
-        return events['data']  # Rückgabe der Ereignisse
+        return response.json().get('body', [])
     else:
-        print("Fehler beim Abrufen der CoinMarketCal-Ereignisse:", response.status_code)
+        print("❌ Fehler bei CoinMarketCal:", response.status_code)
         return []
 
 # Abruf der neuesten Bitcoin-Nachrichten von CryptoPanic
 def get_cryptopanic_news():
-    """Holt die neuesten Bitcoin-Nachrichten von CryptoPanic."""
+    """Holt aktuelle Bitcoin-Nachrichten von CryptoPanic."""
     url = "https://cryptopanic.com/api/v1/posts/"
     params = {
-        'filter': 'bitcoin',  # Filter für Bitcoin-Nachrichten
-        'auth_token': 'dein_api_token'  # Dein Authentifizierungstoken für CryptoPanic
+        'auth_token': CRYPTOPANIC_API_KEY,
+        'currencies': 'BTC',
+        'kind': 'news',
+        'public': 'true'
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
-        news = response.json()
-        return news['results']  # Rückgabe der Nachrichten
+        return response.json().get('results', [])
     else:
-        print("Fehler beim Abrufen der CryptoPanic-Nachrichten:", response.status_code)
+        print("❌ Fehler bei CryptoPanic:", response.status_code)
         return []
 
-# Abruf von Bitcoin-Nachrichten aus CoinTelegraph
-def get_cointelegraph_news():
-    """Holt Bitcoin-Nachrichten von CoinTelegraph."""
-    url = "https://api.cointelegraph.com/v1/news"
-    response = requests.get(url)
-    if response.status_code == 200:
-        news = response.json()
-        return news['data']  # Rückgabe der Nachrichten
-    else:
-        print("Fehler beim Abrufen der CoinTelegraph-Nachrichten:", response.status_code)
-        return []
+# Optional: CoinTelegraph (inaktiv, falls nicht funktionsfähig)
+# def get_cointelegraph_news():
+#     """(Optional) Holt Bitcoin-Nachrichten von CoinTelegraph – keine offizielle API."""
+#     url = "https://api.cointelegraph.com/v1/news"
+#     response = requests.get(url)
+#     if response.status_code == 200:
+#         return response.json().get('data', [])
+#     else:
+#         print("❌ Fehler bei CoinTelegraph:", response.status_code)
+#         return []
 
-# Beispiel, wie du alle wichtigen Quellen abfragst und die Daten verarbeitest
+# Kombinierter Aufruf aller Datenquellen
 def get_important_bitcoin_data():
-    """Kombiniert alle Daten von Ereignissen und Nachrichtenquellen."""
-    # Abruf von Ereignissen von CoinMarketCal
+    """Kombiniert Events und News von CoinMarketCal und CryptoPanic."""
+    
+    # CoinMarketCal Events
     events = get_coinmarketcal_events()
-    print("Bevorstehende Ereignisse von CoinMarketCal:")
+    print("📅 Bevorstehende Ereignisse von CoinMarketCal:")
     for event in events:
-        print(f"- {event['name']} am {event['date']}")
+        title = event.get('title', 'Kein Titel')
+        date = event.get('date_event', 'Kein Datum')
+        print(f"- {title} am {date}")
 
-    # Abruf der Nachrichten von CryptoPanic
+    # CryptoPanic News
     news = get_cryptopanic_news()
-    print("\nNeueste Bitcoin-Nachrichten von CryptoPanic:")
+    print("\n📰 Neueste Bitcoin-Nachrichten von CryptoPanic:")
     for article in news:
-        print(f"- {article['title']}")
+        print(f"- {article.get('title', 'Kein Titel')}")
 
-    # Abruf von Nachrichten von CoinTelegraph
-    cointelegraph_news = get_cointelegraph_news()
-    print("\nNeueste Bitcoin-Nachrichten von CoinTelegraph:")
-    for article in cointelegraph_news:
-        print(f"- {article['title']}")
+    # CoinTelegraph (deaktiviert)
+    # cointelegraph_news = get_cointelegraph_news()
+    # print("\n🗞️ Nachrichten von CoinTelegraph:")
+    # for article in cointelegraph_news:
+    #     print(f"- {article.get('title', 'Kein Titel')}")
 
-# Hauptprogramm: Automatische Abfrage der wichtigen Bitcoin-Daten
+# Direkter Aufruf zum Testen
 if __name__ == "__main__":
     get_important_bitcoin_data()
