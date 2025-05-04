@@ -35,19 +35,12 @@ def get_technical_indicators(data):
     }
     return tech_indicators
 
-# Berechnet die Positionsgröße basierend auf dem Kontostand und dem Risiko
-def calculate_position_size(balance, risk_percentage=0.01, stop_loss=0.02):
-    """Berechnet die Positionsgröße für den Handel basierend auf dem Kontostand und Risiko-Parametern."""
-    position_size = (balance * risk_percentage) / stop_loss
-    return position_size
-
 # Simulierte BTC-Daten (kannst du durch echte Daten ersetzen)
 def get_simulated_data():
     """Erzeugt zufällige Bitcoin-Daten, die durch echte Marktdaten ersetzt werden können."""
     return pd.DataFrame({
         'close': np.random.randn(100) + 100  # Zufällige Zahlen für den Schlusskurs
     })
-
 
 # Berechnungen (Beispiel mit simulierten Daten)
 data = get_simulated_data()
@@ -63,3 +56,4 @@ print(rsi.tail())  # zeigt die letzten 5 Werte des RSI
 # Beispiel für die Verwendung der get_technical_indicators-Funktion
 tech_indicators = get_technical_indicators(data)
 print(tech_indicators)  # Zeigt die technischen Indikatoren an
+
