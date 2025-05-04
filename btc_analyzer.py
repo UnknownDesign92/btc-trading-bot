@@ -48,6 +48,7 @@ def get_simulated_data():
         'close': np.random.randn(100) + 100  # Zufällige Zahlen für den Schlusskurs
     })
 
+
 # Berechnungen (Beispiel mit simulierten Daten)
 data = get_simulated_data()
 
