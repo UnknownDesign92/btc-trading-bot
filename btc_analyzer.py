@@ -86,4 +86,3 @@ while True:
 
     # Warte 5 Minuten, bevor die Daten erneut abgefragt werden
     time.sleep(300)  # alle 5 Minuten
-
