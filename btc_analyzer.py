@@ -106,3 +106,35 @@ if __name__ == "__main__":
             print("➖ NEUTRAL – Keine Aktion")
 
         time.sleep(300)  # 5 Minuten
+
+# Diese Funktionen werden für main.py exportiert
+
+def get_btc_data():
+    """Wrapper für BTC-Daten von Binance."""
+    return get_real_btc_data()
+
+def calculate_indicators(data):
+    """Berechnet RSI und Moving Average und fügt sie dem DataFrame hinzu."""
+    data['rsi'] = calculate_rsi(data)
+    data['sma'] = calculate_moving_average(data)
+    return data
+
+def generate_signal(data, events, news):
+    """Gibt ein Handelssignal basierend auf Events, News und Indikatoren zurück."""
+    # Berücksichtige Events
+    if any("hard fork" in event.get('title', '').lower() for event in events):
+        return "neutral"
+    
+    # Berücksichtige Nachrichten
+    if any("bearish" in article.get('title', '').lower() for article in news):
+        return "short"
+    
+    # Technischer RSI-Ansatz
+    last_rsi = data['rsi'].iloc[-1]
+    if last_rsi < 30:
+        return "long"
+    elif last_rsi > 70:
+        return "short"
+    else:
+        return "neutral"
+
