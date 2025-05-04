@@ -9,7 +9,7 @@ WEBHOOK_URL = "https://discord.com/api/webhooks/1368347672825561218/UlxIyFUDOJm4
 
 last_signal = None
 last_message_time = time.time()  # Speichert die Zeit der letzten Nachricht
-message_interval = 20 * 60  # 20 Minuten (in Sekunden)
+message_interval = 10 * 60  # 20 Minuten (in Sekunden)
 
 while True:
     data = get_real_btc_data()  # Holen der echten Daten
