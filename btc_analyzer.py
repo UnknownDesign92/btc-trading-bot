@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from random import choice
+import requests
 import time
 
 # Beispiel für einfache Moving Average Berechnung
@@ -36,15 +37,22 @@ def get_technical_indicators(data):
     }
     return tech_indicators
 
-# Simulierte BTC-Daten (kannst du durch echte Daten ersetzen)
-def get_simulated_data():
-    """Erzeugt zufällige Bitcoin-Daten, die durch echte Marktdaten ersetzt werden können."""
-    return pd.DataFrame({
-        'close': np.random.randn(100) + 100  # Zufällige Zahlen für den Schlusskurs
-    })
+# Holt echte Bitcoin-Daten von Binance (5-Minuten Intervalle)
+def get_real_btc_data():
+    """Holt echte Bitcoin-Daten von Binance."""
+    url = "https://api.binance.com/api/v3/klines"
+    params = {
+        'symbol': 'BTCUSDT',
+        'interval': '5m',  # 5-Minuten-Intervalle
+        'limit': 100  # Letzte 100 Kerzen
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    closes = [float(candle[4]) for candle in data]  # Der Schlusspreis ist an der 5. Stelle
+    return pd.DataFrame({'close': closes})
 
-# Berechnungen (Beispiel mit simulierten Daten)
-data = get_simulated_data()
+# Berechnungen (Beispiel mit echten Daten von Binance)
+data = get_real_btc_data()  # Hole die echten Daten von Binance
 
 # Berechnungen
 moving_avg = calculate_moving_average(data)
@@ -60,7 +68,7 @@ print(tech_indicators)  # Zeigt die technischen Indikatoren an
 
 # Simuliere eine kontinuierliche Marktüberwachung (z.B. alle 5 Minuten):
 while True:
-    data = get_simulated_data()  # Hole die neuesten simulierten Marktdaten
+    data = get_real_btc_data()  # Hole die neuesten echten Marktdaten von Binance
     tech_indicators = get_technical_indicators(data)
     signal = analyze_btc()  # Führe die BTC-Analyse durch und bekomme ein Signal
 
@@ -78,5 +86,4 @@ while True:
 
     # Warte 5 Minuten, bevor die Daten erneut abgefragt werden
     time.sleep(300)  # alle 5 Minuten
-
 
