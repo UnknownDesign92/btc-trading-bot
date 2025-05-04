@@ -79,3 +79,9 @@ def get_important_bitcoin_data():
 # Direkter Aufruf zum Testen
 if __name__ == "__main__":
     get_important_bitcoin_data()
+# Wrapper-Funktionen für main.py
+def get_events():
+    return get_coinmarketcal_events()
+
+def get_news():
+    return get_cryptopanic_news()
